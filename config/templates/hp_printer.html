@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HP Color LaserJet - Embedded Web Server</title>
+    <style>
+        body { background-color: #f0f0f0; color: #333333; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .header { background-color: #007db1; color: white; padding: 15px; font-size: 20px; font-weight: bold; }
+        .container { display: flex; padding: 20px; }
+        .sidebar { width: 220px; background: #e4e4e4; padding: 15px; border-radius: 4px; min-height: 300px; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar li { padding: 8px 0; border-bottom: 1px solid #ccc; cursor: pointer; color: #007db1; }
+        .main-content { flex: 1; padding-left: 30px; background: white; border: 1px solid #ccc; border-radius: 4px; padding: 20px; margin-left: 20px; }
+        .status-ready { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">HP Color LaserJet Pro M479 - Device Status</div>
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li>Information</li>
+                <li>Paper Handling</li>
+                <li>Print Quality</li>
+                <li>Networking</li>
+                <li>Security Setup</li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <h2>Device Status</h2>
+            <hr>
+            <p><strong>Status:</strong> <span class="status-ready">Ready</span></p>
+            <p><strong>Black Cartridge:</strong> 65% Remaining</p>
+            <p><strong>Cyan Cartridge:</strong> 40% Remaining</p>
+            <p><strong>Magenta Cartridge:</strong> 12% Remaining</p>
+            <p><strong>Yellow Cartridge:</strong> 85% Remaining</p>
+            <br>
+            <h3>Administrator Login Required</h3>
+            <form method="POST" action="/hp/device/SignIn.html">
+                <input type="password" placeholder="Admin PIN" name="pin" style="padding: 5px; width: 150px;">
+                <input type="submit" value="Sign In" style="padding: 5px 15px; background: #007db1; color: white; border: none; cursor: pointer;">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

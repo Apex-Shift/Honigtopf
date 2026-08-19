@@ -1,0 +1,12 @@
+{
+    "name": "hp_laserjet_printer",
+    "description": "Simulates an HP LaserJet Embedded Web Server dashboard",
+    "status_code": "200 OK",
+    "headers": {
+        "Server": "HP-ChaiSOE/1.0",
+        "X-Protected-By": "HP JetDirect Module",
+        "Content-Type": "text/html",
+        "Connection": "close"
+    },
+    "template_path": "config/templates/hp_printer.html"
+}

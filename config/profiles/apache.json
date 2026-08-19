@@ -1,0 +1,14 @@
+{
+    "name": "apache_old_centos",
+    "description": "Simulates an obsolete Apache server with vulnerable PHP",
+    "status_code": "200 OK",
+    "headers": {
+        "Server": "Apache/2.2.15 (CentOS) DAV/2 Mod_SSL/2.2.15",
+        "X-Powered-By": "PHP/5.3.3",
+        "Accept-Ranges": "bytes",
+        "Content-Type": "text/html; charset=UTF-8",
+        "Connection": "close"
+    },
+    "template_path": "config/templates/apache.html"
+
+}

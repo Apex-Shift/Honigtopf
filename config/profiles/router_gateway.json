@@ -1,0 +1,12 @@
+{
+    "name": "netgear_router_gateway",
+    "description": "Simulates a NETGEAR Home Router Smart Wizard interface",
+    "status_code": "200 OK",
+    "headers": {
+        "Server": "netgear_httpd",
+        "WWW-Authenticate": "Basic realm=\"NETGEAR Router\"",
+        "Content-Type": "text/html",
+        "Connection": "close"
+    },
+    "template_path": "config/templates/router_gateway.html"
+}

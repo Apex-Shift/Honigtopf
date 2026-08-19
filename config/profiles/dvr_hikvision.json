@@ -1,0 +1,12 @@
+{
+    "name": "hikvision_dvr_vulnerable",
+    "description": "Simulates an exposed Hikvision NVR/DVR Web Dashboard",
+    "status_code": "200 OK",
+    "headers": {
+        "Server": "App-webs/",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Content-Type": "text/html; charset=utf-8",
+        "Connection": "close"
+    },
+    "template_path": "config/templates/hikvision.html"
+}
