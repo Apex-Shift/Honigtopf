@@ -85,6 +85,27 @@ Ensure you have Python 3.10+ installed.
 4. Configure your desired target ports inside the graphical table panel, select your profile nodes, and click **LAUNCH** to engage the trap arrays.
 
 ---
+---
+
+## 🤝 Contributing & UI Improvements
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+We are actively looking for help to expand the framework's deception capabilities, with a major focus on **Front-End UI Realism**.
+
+### 🎨 How You Can Help
+- **Improve Existing Mirages:** Polish the HTML/CSS templates (Hikvision, Netgear, HP, etc.) to match 1:1 with real-world target login screens.
+- **Add New IoT Profiles:** Submit new combinations of `.json` configurations and `.html` templates for widely exposed devices (e.g., QNAP NAS, Dahua Cameras, Ubiquiti Gateways, Schneider PLC web panels).
+- **Protocol Expansion:** Help write new non-blocking asynchronous modules (e.g., FTP, SSH, or MQTT emulators).
+
+### 🛠️ Guidelines
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingDeception`)
+3. Commit your Changes (`git commit -m 'Add realistic dashboard for QNAP NAS'`)
+4. Push to the Branch (`git push origin feature/AmazingDeception`)
+5. Open a Pull Request
+
+*Please ensure that any submitted HTML templates do not include external dependencies (like remote Fonts or live CDNs) so the honeypot can continue to run 100% locally and stealthily.*
 
 ## 🛡️ Disclaimer
 
