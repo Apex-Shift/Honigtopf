@@ -1,17 +1,15 @@
-"""Honigtopf V2 – Professional dark GUI."""
+"""Honigtopf V3 control GUI – multi-service launcher."""
 
 from __future__ import annotations
 
 import asyncio
 import os
 import threading
-from datetime import datetime
+import webbrowser
 
 import customtkinter as ctk
 
-from src.engine import HonigtopfHTTP
-from src.logger import EventLogger
-from src.telnet import HonigtopfTelnet
+from src.core.manager import ServiceManager
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
@@ -20,102 +18,113 @@ ctk.set_default_color_theme("blue")
 class HonigtopfGUI(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
-        self.title("Honigtopf  v2 — Multi-Service Honeypot Framework")
-        self.geometry("980x680")
-        self.minsize(860, 580)
+        self.title("Honigtopf v3 — Multi-Service Honeypot")
+        self.geometry("1000x720")
+        self.minsize(880, 600)
 
+        self.manager = ServiceManager()
         self.loop: asyncio.AbstractEventLoop | None = None
-        self.log_queue: asyncio.Queue | None = None
-        self.http_engines: list[HonigtopfHTTP] = []
-        self.telnet_engine: HonigtopfTelnet | None = None
         self.is_running = False
-        self.event_logger = EventLogger()
+        self._dash_thread = None
 
-        self._build_ui()
-        self._refresh_profiles()
+        self._build()
 
-    # ------------------------------------------------------------------ UI
-    def _build_ui(self) -> None:
-        # Top control bar
+    def _build(self) -> None:
+        # Header
         top = ctk.CTkFrame(self, corner_radius=0)
-        top.pack(fill="x", padx=0, pady=0)
+        top.pack(fill="x")
+        ctk.CTkLabel(
+            top, text="🍯 Honigtopf v3", font=ctk.CTkFont(size=20, weight="bold")
+        ).pack(side="left", padx=16, pady=12)
+        ctk.CTkButton(
+            top, text="Open Dashboard", width=130, command=self._open_dashboard
+        ).pack(side="right", padx=16, pady=12)
 
-        inner = ctk.CTkFrame(top, fg_color="transparent")
-        inner.pack(fill="x", padx=16, pady=12)
+        # Config grid
+        cfg = ctk.CTkFrame(self)
+        cfg.pack(fill="x", padx=16, pady=10)
 
-        ctk.CTkLabel(inner, text="HTTP Port", font=ctk.CTkFont(size=13)).pack(side="left", padx=(0, 4))
-        self.ent_http = ctk.CTkEntry(inner, width=70)
-        self.ent_http.insert(0, "8080")
-        self.ent_http.pack(side="left", padx=(0, 12))
+        # HTTP
+        row1 = ctk.CTkFrame(cfg, fg_color="transparent")
+        row1.pack(fill="x", pady=4)
+        self.chk_http = ctk.CTkCheckBox(row1, text="HTTP")
+        self.chk_http.select()
+        self.chk_http.pack(side="left", padx=8)
+        ctk.CTkLabel(row1, text="Port").pack(side="left")
+        self.ent_http_port = ctk.CTkEntry(row1, width=70)
+        self.ent_http_port.insert(0, "8080")
+        self.ent_http_port.pack(side="left", padx=6)
+        ctk.CTkLabel(row1, text="Profile").pack(side="left", padx=(12, 4))
+        profiles = self._list_profiles()
+        self.cmb_profile = ctk.CTkComboBox(row1, values=profiles or ["apache"], width=160)
+        if profiles:
+            self.cmb_profile.set(profiles[0])
+        self.cmb_profile.pack(side="left")
 
-        ctk.CTkLabel(inner, text="Telnet Port", font=ctk.CTkFont(size=13)).pack(side="left", padx=(0, 4))
-        self.ent_telnet = ctk.CTkEntry(inner, width=60)
-        self.ent_telnet.insert(0, "23")
-        self.ent_telnet.pack(side="left", padx=(0, 12))
+        # Extra HTTP instances note
+        ctk.CTkLabel(
+            cfg,
+            text="Tip: add more HTTP listeners by deploying again with different ports after stop, or edit manager in code for multi-HTTP.",
+            text_color="#666",
+            font=ctk.CTkFont(size=11),
+        ).pack(anchor="w", padx=12)
 
-        ctk.CTkLabel(inner, text="Profile", font=ctk.CTkFont(size=13)).pack(side="left", padx=(0, 4))
-        self.cmb_profile = ctk.CTkComboBox(inner, width=180, values=["loading…"])
-        self.cmb_profile.pack(side="left", padx=(0, 12))
+        # Telnet / FTP / SMB
+        row2 = ctk.CTkFrame(cfg, fg_color="transparent")
+        row2.pack(fill="x", pady=6)
+        self.chk_telnet = ctk.CTkCheckBox(row2, text="Telnet")
+        self.chk_telnet.select()
+        self.chk_telnet.pack(side="left", padx=8)
+        self.ent_telnet = ctk.CTkEntry(row2, width=60)
+        self.ent_telnet.insert(0, "2323")
+        self.ent_telnet.pack(side="left")
 
-        self.btn_refresh = ctk.CTkButton(
-            inner, text="↻", width=36, command=self._refresh_profiles
-        )
-        self.btn_refresh.pack(side="left", padx=(0, 16))
+        self.chk_ftp = ctk.CTkCheckBox(row2, text="FTP")
+        self.chk_ftp.select()
+        self.chk_ftp.pack(side="left", padx=(20, 4))
+        self.ent_ftp = ctk.CTkEntry(row2, width=60)
+        self.ent_ftp.insert(0, "2121")
+        self.ent_ftp.pack(side="left")
 
+        self.chk_smb = ctk.CTkCheckBox(row2, text="SMB")
+        self.chk_smb.pack(side="left", padx=(20, 4))
+        self.ent_smb = ctk.CTkEntry(row2, width=60)
+        self.ent_smb.insert(0, "4455")
+        self.ent_smb.pack(side="left")
+
+        # Buttons
+        btns = ctk.CTkFrame(self, fg_color="transparent")
+        btns.pack(fill="x", padx=16, pady=6)
         self.btn_toggle = ctk.CTkButton(
-            inner,
-            text="DEPLOY HIVE",
-            width=140,
-            height=36,
+            btns,
+            text="DEPLOY ALL",
+            width=160,
+            height=40,
             fg_color="#27ae60",
             hover_color="#1e8449",
             font=ctk.CTkFont(weight="bold"),
             command=self.toggle,
         )
-        self.btn_toggle.pack(side="right")
+        self.btn_toggle.pack(side="left")
+        self.lbl_status = ctk.CTkLabel(btns, text="Idle", text_color="#888")
+        self.lbl_status.pack(side="left", padx=16)
 
-        # Status line
-        self.lbl_status = ctk.CTkLabel(
-            self, text="Ready — select a profile and deploy", text_color="#888", anchor="w"
-        )
-        self.lbl_status.pack(fill="x", padx=20, pady=(4, 0))
+        # Log
+        self.txt = ctk.CTkTextbox(self, font=ctk.CTkFont(family="Consolas", size=13), fg_color="#0d0d0d")
+        self.txt.pack(fill="both", expand=True, padx=16, pady=12)
+        self._log("[*] Honigtopf v3 ready. Select services and deploy.\n")
+        self._log("[*] Dashboard will be at http://127.0.0.1:8050\n")
 
-        # Log area
-        log_frame = ctk.CTkFrame(self)
-        log_frame.pack(fill="both", expand=True, padx=16, pady=12)
+    def _list_profiles(self) -> list[str]:
+        d = "config/profiles"
+        if not os.path.isdir(d):
+            return []
+        return sorted(os.path.splitext(f)[0] for f in os.listdir(d) if f.endswith(".json"))
 
-        self.txt_logs = ctk.CTkTextbox(
-            log_frame, font=ctk.CTkFont(family="Consolas", size=13), fg_color="#0d0d0d"
-        )
-        self.txt_logs.pack(fill="both", expand=True, padx=8, pady=8)
+    def _log(self, msg: str) -> None:
+        self.txt.insert("end", msg)
+        self.txt.see("end")
 
-        # Bottom bar
-        bottom = ctk.CTkFrame(self, height=36, corner_radius=0)
-        bottom.pack(fill="x", side="bottom")
-        self.lbl_footer = ctk.CTkLabel(
-            bottom,
-            text="Honigtopf v2  •  Authorized defensive use only",
-            text_color="#555",
-            font=ctk.CTkFont(size=11),
-        )
-        self.lbl_footer.pack(side="left", padx=16, pady=6)
-
-    def _refresh_profiles(self) -> None:
-        profiles_dir = "config/profiles"
-        if os.path.isdir(profiles_dir):
-            names = sorted(
-                os.path.splitext(f)[0]
-                for f in os.listdir(profiles_dir)
-                if f.endswith(".json")
-            )
-        else:
-            names = []
-        if not names:
-            names = ["(no profiles found)"]
-        self.cmb_profile.configure(values=names)
-        self.cmb_profile.set(names[0])
-
-    # ------------------------------------------------------------------ Control
     def toggle(self) -> None:
         if not self.is_running:
             self._start()
@@ -123,72 +132,70 @@ class HonigtopfGUI(ctk.CTk):
             self._stop()
 
     def _start(self) -> None:
-        try:
-            http_port = int(self.ent_http.get().strip())
-            telnet_port = int(self.ent_telnet.get().strip())
-        except ValueError:
-            self._log("Invalid port number\n")
-            return
+        self.manager = ServiceManager()
+        host = "0.0.0.0"
 
-        profile = self.cmb_profile.get()
-        if not profile or profile.startswith("("):
-            self._log("No valid profile selected\n")
+        if self.chk_http.get():
+            port = int(self.ent_http_port.get())
+            prof = self.cmb_profile.get()
+            path = f"config/profiles/{prof}.json"
+            self.manager.add_http(host, port, path)
+
+        if self.chk_telnet.get():
+            self.manager.add_telnet(host, int(self.ent_telnet.get()))
+
+        if self.chk_ftp.get():
+            self.manager.add_ftp(host, int(self.ent_ftp.get()))
+
+        if self.chk_smb.get():
+            self.manager.add_smb(host, int(self.ent_smb.get()))
+
+        if not self.manager.services:
+            self._log("[-] No service selected\n")
             return
 
         self.is_running = True
-        self.btn_toggle.configure(text="SHUTDOWN", fg_color="#c0392b", hover_color="#922b21")
-        self.ent_http.configure(state="disabled")
-        self.ent_telnet.configure(state="disabled")
-        self.cmb_profile.configure(state="disabled")
-        self.lbl_status.configure(text=f"Active — HTTP :{http_port}  |  Telnet :{telnet_port}  |  Profile: {profile}", text_color="#2ecc71")
-
-        threading.Thread(target=self._run_async, args=(http_port, telnet_port, profile), daemon=True).start()
+        self.btn_toggle.configure(text="SHUTDOWN ALL", fg_color="#c0392b")
+        self.lbl_status.configure(text="Running", text_color="#2ecc71")
+        threading.Thread(target=self._run_loop, daemon=True).start()
+        self._start_dashboard()
 
     def _stop(self) -> None:
         self.is_running = False
-        self.btn_toggle.configure(text="DEPLOY HIVE", fg_color="#27ae60", hover_color="#1e8449")
-        self.ent_http.configure(state="normal")
-        self.ent_telnet.configure(state="normal")
-        self.cmb_profile.configure(state="normal")
+        self.btn_toggle.configure(text="DEPLOY ALL", fg_color="#27ae60")
         self.lbl_status.configure(text="Stopped", text_color="#e74c3c")
-
         if self.loop and self.loop.is_running():
-            for eng in self.http_engines:
-                asyncio.run_coroutine_threadsafe(eng.stop(), self.loop)
-            if self.telnet_engine:
-                asyncio.run_coroutine_threadsafe(self.telnet_engine.stop(), self.loop)
-            self.loop.call_soon_threadsafe(self.loop.stop)
+            asyncio.run_coroutine_threadsafe(self._async_stop(), self.loop)
 
-    def _run_async(self, http_port: int, telnet_port: int, profile: str) -> None:
+    async def _async_stop(self) -> None:
+        msgs = await self.manager.stop_all()
+        for m in msgs:
+            self.after(0, lambda x=m: self._log(x + "\n"))
+        self.loop.call_soon_threadsafe(self.loop.stop)
+
+    def _run_loop(self) -> None:
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
-        self.log_queue = asyncio.Queue()
 
-        prof_path = f"config/profiles/{profile}.json"
-        http = HonigtopfHTTP("0.0.0.0", http_port, prof_path, self.log_queue, self.event_logger)
-        telnet = HonigtopfTelnet("0.0.0.0", telnet_port, self.log_queue, self.event_logger)
-        self.http_engines = [http]
-        self.telnet_engine = telnet
+        async def boot():
+            msgs = await self.manager.start_all()
+            for m in msgs:
+                self.after(0, lambda x=m: self._log(x + "\n"))
+            self.after(0, lambda: self._log("[*] All selected services are up.\n"))
 
-        self.loop.create_task(http.start())
-        self.loop.create_task(telnet.start())
-        self.loop.create_task(self._poll_logs())
-        try:
-            self.loop.run_forever()
-        finally:
-            self.loop.close()
+        self.loop.create_task(boot())
+        self.loop.run_forever()
 
-    async def _poll_logs(self) -> None:
-        while self.is_running and self.log_queue:
-            try:
-                msg = await asyncio.wait_for(self.log_queue.get(), timeout=0.5)
-                self.after(0, lambda m=msg: self._log(m))
-                self.log_queue.task_done()
-            except asyncio.TimeoutError:
-                continue
-            except Exception:
-                break
+    def _start_dashboard(self) -> None:
+        def run():
+            import uvicorn
+            from src.dashboard.app import app
+            uvicorn.run(app, host="127.0.0.1", port=8050, log_level="warning")
 
-    def _log(self, text: str) -> None:
-        self.txt_logs.insert("end", text)
-        self.txt_logs.see("end")
+        if self._dash_thread is None or not self._dash_thread.is_alive():
+            self._dash_thread = threading.Thread(target=run, daemon=True)
+            self._dash_thread.start()
+            self._log("[*] Dashboard: http://127.0.0.1:8050\n")
+
+    def _open_dashboard(self) -> None:
+        webbrowser.open("http://127.0.0.1:8050")

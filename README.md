@@ -1,22 +1,25 @@
-# Honigtopf v2
+# Honigtopf v3
 
-**Multi-service IoT & server honeypot framework.**
+**Multi-service honeypot framework with advanced Plotly dashboard.**
 
-Honigtopf (German for *honeypot*) is an asynchronous deception framework that emulates vulnerable IoT devices, routers, cameras, printers, NAS systems and classic web servers. It captures reconnaissance probes, credential stuffing attempts and file-exfiltration lures while presenting convincing login pages and service banners.
+Launch HTTP (IoT/router/server profiles), Telnet, FTP and SMB honeypots at the same time.  
+All events are logged and visualized in a live web dashboard with filters and charts.
 
 ---
 
 ## Features
 
-- **18 ready-to-use profiles**  
-  Hikvision, Dahua, Axis, Cisco, Netgear, TP-Link, D-Link, ASUS, MikroTik, HP LaserJet, Synology, QNAP, Apache, Nginx, IIS, Tomcat, WordPress, phpMyAdmin
-- **HTTP + Telnet** honeypots running concurrently
-- **Credential harvesting** from POST forms
-- **Honeyfile download lure** detection
-- **Live geolocation** of attackers
-- **Persistent JSONL logging**
-- **Modern dark CustomTkinter GUI**
-- Fully asynchronous (`asyncio`) – UI never freezes
+- **Multi-service concurrent deploy** — HTTP + Telnet + FTP + SMB together
+- **18+ IoT / router / server profiles** (Hikvision, Cisco, Netgear, Synology, …)
+- **Credential harvesting** on HTTP POST, Telnet, FTP
+- **Honeyfile exfil lure** detection
+- **SMB connection logger** (port 445 probes)
+- **Live web dashboard** (Plotly):
+  - Stats cards
+  - Pie / bar / timeline charts
+  - Filters by IP, location, type, service
+  - Auto-refresh every 15s
+- **Persistent JSONL event store**
 
 ---
 
@@ -27,62 +30,51 @@ pip install -r requirements.txt
 python main.py
 ```
 
-1. Choose a profile from the dropdown  
-2. Set HTTP and Telnet ports  
-3. Click **DEPLOY HIVE**
+1. Tick the services you want (HTTP / Telnet / FTP / SMB)
+2. Set ports (defaults avoid privileged ports: 8080, 2323, 2121, 4455)
+3. Click **DEPLOY ALL**
+4. Open **Dashboard** → http://127.0.0.1:8050
 
 ---
 
-## Project Layout
+## Default ports (non-root friendly)
+
+| Service | Default port |
+|---------|--------------|
+| HTTP    | 8080         |
+| Telnet  | 2323         |
+| FTP     | 2121         |
+| SMB     | 4455         |
+
+Use 21 / 23 / 445 only if you run as root / admin and your provider allows it.
+
+---
+
+## Dashboard API
+
+- `GET /` — HTML dashboard
+- `GET /api/stats` — aggregated stats
+- `GET /api/events?ip=&type=&service=&location=` — filtered events
+
+---
+
+## Project layout
 
 ```
-Honigtopf/
+HonigtopfV3/
 ├── main.py
-├── requirements.txt
-├── config/
-│   ├── profiles/          # 18 JSON profiles
-│   └── templates/         # Matching HTML pages
+├── config/profiles/ + templates/
 ├── src/
-│   ├── engine.py          # HTTP honeypot
-│   ├── telnet.py          # Telnet / BusyBox honeypot
-│   ├── geoloc.py
-│   ├── logger.py
+│   ├── core/          # events, geoloc, manager
+│   ├── services/      # http, telnet, ftp, smb
+│   ├── dashboard/     # FastAPI + Plotly
 │   └── gui.py
-└── logs/
-    └── honigtopf_master.jsonl
-```
-
----
-
-## Adding a New Profile
-
-1. Create `config/profiles/mydevice.json`
-2. Create `config/templates/mydevice.html`
-3. Click the ↻ button in the GUI (or restart)
-
-Example profile:
-
-```json
-{
-  "name": "mydevice",
-  "description": "My custom device",
-  "status_code": "200 OK",
-  "headers": {
-    "Server": "MyDevice/1.0",
-    "Content-Type": "text/html"
-  },
-  "template_path": "config/templates/mydevice.html"
-}
+├── logs/events.jsonl
+└── reports/
 ```
 
 ---
 
 ## Disclaimer
 
-For authorized defensive research and education only.  
-Deploy only on networks you own or have explicit permission to monitor.  
-The authors accept no liability for misuse.
-
----
-
-**Honigtopf v2** — make the attackers waste their time.
+Authorized defensive research only. Deploy only on systems you own or are allowed to monitor.
