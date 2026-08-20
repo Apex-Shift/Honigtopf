@@ -1,0 +1,10 @@
+{
+  "name": "qnap_nas",
+  "description": "QNAP NAS login",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "http server 1.0",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/qnap.html"
+}

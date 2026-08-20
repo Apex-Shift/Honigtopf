@@ -1,0 +1,10 @@
+{
+  "name": "phpmyadmin",
+  "description": "phpMyAdmin login",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "Apache",
+    "Content-Type": "text/html; charset=utf-8"
+  },
+  "template_path": "config/templates/phpmyadmin.html"
+}

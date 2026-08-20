@@ -1,13 +1,11 @@
 {
-    "name": "cisco_ios_router",
-    "description": "Simulates an administrative interface for a Cisco Router",
-    "status_code": "401 Unauthorized",
-    "headers": {
-        "Server": "Cisco-IOS microHTTPD",
-        "WWW-Authenticate": "Basic realm=\"Cisco Router\"",
-        "Content-Type": "text/html; charset=UTF-8",
-        "Connection": "close"
-    },
-    "template_path": "config/templates/cisco.html"
-
+  "name": "cisco_ios",
+  "description": "Cisco IOS Router management",
+  "status_code": "401 Unauthorized",
+  "headers": {
+    "Server": "cisco-IOS",
+    "WWW-Authenticate": "Basic realm=\"Cisco Router\"",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/cisco.html"
 }

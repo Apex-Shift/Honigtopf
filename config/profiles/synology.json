@@ -1,0 +1,10 @@
+{
+  "name": "synology_nas",
+  "description": "Synology DSM login",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "nginx",
+    "Content-Type": "text/html; charset=\"utf-8\""
+  },
+  "template_path": "config/templates/synology.html"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "hikvision_dvr",
+  "description": "Hikvision NVR/DVR web interface",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "App-webs/",
+    "Content-Type": "text/html; charset=utf-8"
+  },
+  "template_path": "config/templates/hikvision.html"
+}

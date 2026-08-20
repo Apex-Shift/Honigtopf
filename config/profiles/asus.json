@@ -1,0 +1,10 @@
+{
+  "name": "asus_router",
+  "description": "ASUS Router Web UI",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "httpd",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/asus.html"
+}

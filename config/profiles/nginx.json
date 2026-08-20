@@ -1,0 +1,10 @@
+{
+  "name": "nginx_default",
+  "description": "Default Nginx welcome page",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "nginx/1.14.2",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/nginx.html"
+}

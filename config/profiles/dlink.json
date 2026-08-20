@@ -1,0 +1,10 @@
+{
+  "name": "dlink_router",
+  "description": "D-Link Router",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "D-Link",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/dlink.html"
+}

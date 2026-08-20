@@ -1,0 +1,10 @@
+{
+  "name": "axis_camera",
+  "description": "Axis Network Camera",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "Axis",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/axis.html"
+}

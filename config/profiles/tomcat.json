@@ -1,0 +1,10 @@
+{
+  "name": "tomcat_manager",
+  "description": "Apache Tomcat Manager login",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "Apache-Coyote/1.1",
+    "Content-Type": "text/html;charset=utf-8"
+  },
+  "template_path": "config/templates/tomcat.html"
+}

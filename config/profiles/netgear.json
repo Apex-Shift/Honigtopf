@@ -1,0 +1,10 @@
+{
+  "name": "netgear_router",
+  "description": "NETGEAR Smart Wizard",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "netgear_httpd",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/netgear.html"
+}

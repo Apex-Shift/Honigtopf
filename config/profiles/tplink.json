@@ -1,0 +1,10 @@
+{
+  "name": "tplink_router",
+  "description": "TP-Link Router login",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "TP-LINK Router",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/tplink.html"
+}

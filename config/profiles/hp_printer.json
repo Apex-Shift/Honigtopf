@@ -1,0 +1,10 @@
+{
+  "name": "hp_laserjet",
+  "description": "HP LaserJet Embedded Web Server",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "HP-ChaiSOE/1.0",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/hp_printer.html"
+}

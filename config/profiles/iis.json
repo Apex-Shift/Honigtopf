@@ -1,14 +1,12 @@
 {
-    "name": "iis_85_vulnerable",
-    "description": "Simulates an outdated Microsoft IIS 8.5 server",
-    "status_code": "200 OK",
-    "headers": {
-        "Server": "Microsoft-IIS/8.5",
-        "X-Powered-By": "ASP.NET",
-        "X-AspNet-Version": "4.0.30319",
-        "Content-Type": "text/html; charset=UTF-8",
-        "Connection": "close"
-    },
-    "template_path": "config/templates/iis.html"
-
+  "name": "iis_85",
+  "description": "Microsoft IIS 8.5",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "Microsoft-IIS/8.5",
+    "X-Powered-By": "ASP.NET",
+    "X-AspNet-Version": "4.0.30319",
+    "Content-Type": "text/html; charset=UTF-8"
+  },
+  "template_path": "config/templates/iis.html"
 }

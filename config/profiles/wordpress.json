@@ -1,0 +1,11 @@
+{
+  "name": "wordpress_login",
+  "description": "WordPress admin login page",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "Apache",
+    "X-Powered-By": "PHP/7.4.3",
+    "Content-Type": "text/html; charset=UTF-8"
+  },
+  "template_path": "config/templates/wordpress.html"
+}

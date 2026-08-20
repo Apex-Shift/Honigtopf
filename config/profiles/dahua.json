@@ -1,0 +1,10 @@
+{
+  "name": "dahua_dvr",
+  "description": "Dahua DVR/NVR login",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "DahuaRtspServer",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/dahua.html"
+}

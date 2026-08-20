@@ -1,0 +1,10 @@
+{
+  "name": "mikrotik_router",
+  "description": "MikroTik RouterOS WebFig",
+  "status_code": "200 OK",
+  "headers": {
+    "Server": "MikroTik HttpProxy",
+    "Content-Type": "text/html"
+  },
+  "template_path": "config/templates/mikrotik.html"
+}
