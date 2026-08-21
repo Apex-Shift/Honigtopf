@@ -1,3 +1,5 @@
+<img width="1366" height="720" alt="Sans titre" src="https://github.com/user-attachments/assets/a96f9117-adae-46b6-804e-0ccb5b6bbade" />
+
 # Honigtopf v5.0
 
 **Enterprise-grade multi-service honeypot framework with interactive emulation, real-time Webhook telemetry, rate-limited analytics, and native Docker / Headless CLI support.**
