@@ -92,7 +92,7 @@ options:
   -h, --help     show this help message and exit
 Start Flags (cli.py start)--services: List of services to activate (http, telnet, ftp, smb).--http-port: Override HTTP port.--telnet-port: Override Telnet port.--ftp-port: Override FTP port.--smb-port: Override SMB port.📡 REST API SpecificationsAll endpoints require HTTP Basic Auth credentials (defined in config/auth.json) and are protected by rate limiting.EndpointMethodRate LimitDescription/GET60 req/minInteractive Plotly visual dashboard/api/statsGET30 req/minSummary statistics (by type, country, service)/api/eventsGET30 req/minFiltered raw logs (ip, service, type, location)
 
-##📂 Project StructurePlaintextHonigtopfV5/
+##Project StructurePlaintextHonigtopfV5/
 
 ├── cli.py                    # Production CLI Entrypoint (Headless)
 ├── main.py                   # CustomTkinter Desktop GUI Entrypoint
@@ -120,5 +120,5 @@ Start Flags (cli.py start)--services: List of services to activate (http, telnet
 └── reports/                  # Analytics & Export Summaries
 
 
-##⚠️ Disclaimer
+##Disclaimer
 This framework is developed exclusively for authorized defensive security research, threat intelligence collection, and educational monitoring. Deploy Honigtopf only on infrastructure you own or have explicit authorization to monitor. The author assumes no responsibility for unauthorized deployment or misuse.
