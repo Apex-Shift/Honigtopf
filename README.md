@@ -1,4 +1,4 @@
-# Honigtopf v3
+# Honigtopf v3.1
 
 **Multi-service honeypot framework with advanced Plotly dashboard.**
 
