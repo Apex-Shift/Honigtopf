@@ -63,15 +63,19 @@ Use 21 / 23 / 445 only if you run as root / admin and your provider allows it.
 ## Project layout
 
 ```
-HonigtopfV3/
+HonigtopfV31/
 ├── main.py
-├── config/profiles/ + templates/
+├── config/
+│   ├── auth.json
+│   └── profiles/
+│       └── templates/
 ├── src/
 │   ├── core/          # events, geoloc, manager
 │   ├── services/      # http, telnet, ftp, smb
-│   ├── dashboard/     # FastAPI + Plotly
-│   └── gui.py
-├── logs/events.jsonl
+│   ├── dashboard/     # FastAPI + Plotly + Basic Auth
+│   └── gui.py         # CustomTkinter GUI + Password Reset
+├── logs/
+│   └── events.jsonl
 └── reports/
 ```
 
