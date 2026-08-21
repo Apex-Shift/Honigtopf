@@ -18,7 +18,7 @@ ctk.set_default_color_theme("blue")
 class HonigtopfGUI(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
-        self.title("Honigtopf v3 — Multi-Service Honeypot")
+        self.title("Honigtopf v3.1 — Multi-Service Honeypot")
         self.geometry("1000x720")
         self.minsize(880, 600)
 
@@ -190,12 +190,13 @@ class HonigtopfGUI(ctk.CTk):
         def run():
             import uvicorn
             from src.dashboard.app import app
-            uvicorn.run(app, host="127.0.0.1", port=8050, log_level="warning")
+            # Bind to 0.0.0.0 to allow access from local network / router IP
+            uvicorn.run(app, host="0.0.0.0", port=8050, log_level="warning")
 
         if self._dash_thread is None or not self._dash_thread.is_alive():
             self._dash_thread = threading.Thread(target=run, daemon=True)
             self._dash_thread.start()
-            self._log("[*] Dashboard: http://127.0.0.1:8050\n")
+            self._log("[*] Dashboard running at: http://0.0.0.0:8050\n")
 
     def _open_dashboard(self) -> None:
         webbrowser.open("http://127.0.0.1:8050")

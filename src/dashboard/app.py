@@ -1,21 +1,56 @@
-"""Advanced web dashboard with Plotly charts and filters."""
+"""Advanced web dashboard with Plotly charts and dynamic authentication."""
 
 from __future__ import annotations
 
 import json
-from typing import Any
-
-from fastapi import FastAPI, Query, Request
+import os
+import secrets
+from fastapi import FastAPI, Query, Depends, HTTPException, status
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from src.core.events import store
 
 app = FastAPI(title="Honigtopf Dashboard", version="3.0")
 
+# Security and Credentials Setup
+security = HTTPBasic()
+AUTH_CONFIG_PATH = "config/auth.json"
 
-DASHBOARD_HTML = """
-<!DOCTYPE html>
+
+def load_credentials() -> tuple[str, str]:
+    """Load username and password from configuration file or create defaults."""
+    os.makedirs("config", exist_ok=True)
+    if not os.path.exists(AUTH_CONFIG_PATH):
+        default_config = {"username": "admin", "password": "StrongDashboardPassword123!"}
+        with open(AUTH_CONFIG_PATH, "w", encoding="utf-8") as f:
+            json.dump(default_config, f, indent=2)
+        return default_config["username"], default_config["password"]
+
+    try:
+        with open(AUTH_CONFIG_PATH, "r", encoding="utf-8") as f:
+            config = json.load(f)
+            return config.get("username", "admin"), config.get("password", "StrongDashboardPassword123!")
+    except Exception:
+        return "admin", "StrongDashboardPassword123!"
+
+
+def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)) -> str:
+    """Validate HTTP Basic Auth credentials using constant-time comparison."""
+    current_user, current_password = load_credentials()
+    correct_username = secrets.compare_digest(credentials.username, current_user)
+    correct_password = secrets.compare_digest(credentials.password, current_password)
+
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+
+DASHBOARD_HTML = """<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -138,7 +173,7 @@ async function refresh() {
     x: cVals, y: cLabels, type: 'bar', orientation: 'h', marker: { color: '#3fb950' }
   }], { title: 'Top locations', paper_bgcolor: '#161b22', plot_bgcolor: '#161b22', font: { color: '#e6edf3' }, height: 280, margin: { l: 120 } }, {responsive: true});
 
-  // Simple timeline from events
+  // Timeline
   const hours = {};
   events.forEach(e => {
     const h = (e.timestamp || '').slice(0, 13);
@@ -186,12 +221,12 @@ setInterval(refresh, 15000);
 
 
 @app.get("/", response_class=HTMLResponse)
-async def dashboard():
+async def dashboard(username: str = Depends(verify_credentials)):
     return HTMLResponse(DASHBOARD_HTML)
 
 
 @app.get("/api/stats")
-async def api_stats():
+async def api_stats(username: str = Depends(verify_credentials)):
     return JSONResponse(store.stats())
 
 
@@ -202,6 +237,7 @@ async def api_events(
     type: str = Query(""),
     service: str = Query(""),
     limit: int = Query(200),
+    username: str = Depends(verify_credentials),
 ):
     filters = {}
     if ip:
