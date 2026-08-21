@@ -1,5 +1,5 @@
 
-<img width="631" height="466" alt="Sans titre" src="https://github.com/user-attachments/assets/fcf90cd6-e002-4a13-8b8d-a439f39b0e5c" />
+<img width="1366" height="720" alt="Sans titre" src="https://github.com/user-attachments/assets/2d18e414-126e-4a27-bb55-a37c9c33f842" />
 
 # Honigtopf v5.0
 
