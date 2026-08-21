@@ -90,7 +90,10 @@ positional arguments:
 
 options:
   -h, --help     show this help message and exit
-Start Flags (cli.py start)--services: List of services to activate (http, telnet, ftp, smb).--http-port: Override HTTP port.--telnet-port: Override Telnet port.--ftp-port: Override FTP port.--smb-port: Override SMB port.📡 REST API SpecificationsAll endpoints require HTTP Basic Auth credentials (defined in config/auth.json) and are protected by rate limiting.EndpointMethodRate LimitDescription/GET60 req/minInteractive Plotly visual dashboard/api/statsGET30 req/minSummary statistics (by type, country, service)/api/eventsGET30 req/minFiltered raw logs (ip, service, type, location)📂 Project StructurePlaintextHonigtopfV5/
+Start Flags (cli.py start)--services: List of services to activate (http, telnet, ftp, smb).--http-port: Override HTTP port.--telnet-port: Override Telnet port.--ftp-port: Override FTP port.--smb-port: Override SMB port.📡 REST API SpecificationsAll endpoints require HTTP Basic Auth credentials (defined in config/auth.json) and are protected by rate limiting.EndpointMethodRate LimitDescription/GET60 req/minInteractive Plotly visual dashboard/api/statsGET30 req/minSummary statistics (by type, country, service)/api/eventsGET30 req/minFiltered raw logs (ip, service, type, location)
+
+📂 Project StructurePlaintextHonigtopfV5/
+
 ├── cli.py                    # Production CLI Entrypoint (Headless)
 ├── main.py                   # CustomTkinter Desktop GUI Entrypoint
 ├── Dockerfile                # Multi-stage Non-Root Alpine Build
