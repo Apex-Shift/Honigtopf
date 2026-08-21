@@ -1,4 +1,4 @@
-"""Central event store for Honigtopf V3."""
+"""Central event store for Honigtopf V4 with Webhook Notifications."""
 
 from __future__ import annotations
 
@@ -8,6 +8,20 @@ import threading
 from collections import deque
 from datetime import datetime
 from typing import Any
+
+from src.core.notifier import AlertNotifier
+
+# Charge l'URL du Webhook depuis config/settings.json s'il existe
+WEBHOOK_URL = ""
+SETTINGS_PATH = "config/settings.json"
+if os.path.exists(SETTINGS_PATH):
+    try:
+        with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+            WEBHOOK_URL = json.load(f).get("webhook_url", "")
+    except Exception:
+        pass
+
+notifier = AlertNotifier(webhook_url=WEBHOOK_URL)
 
 
 class EventStore:
@@ -27,6 +41,9 @@ class EventStore:
                     f.write(json.dumps(event, ensure_ascii=False) + "\n")
             except Exception:
                 pass
+        
+        # Envoi de l'alerte en arrière-plan via le Webhook
+        threading.Thread(target=notifier.send_alert, args=(event,), daemon=True).start()
 
     def recent(self, limit: int = 200, **filters: Any) -> list[dict[str, Any]]:
         with self._lock:
@@ -40,11 +57,6 @@ class EventStore:
                     break
         return out
 
-    def all_filtered(self, **filters: Any) -> list[dict[str, Any]]:
-        with self._lock:
-            items = list(self._memory)
-        return [e for e in items if self._match(e, filters)]
-
     def stats(self) -> dict[str, Any]:
         with self._lock:
             items = list(self._memory)
@@ -56,7 +68,6 @@ class EventStore:
             by_type[e.get("type", "?")] = by_type.get(e.get("type", "?"), 0) + 1
             by_service[e.get("service", "?")] = by_service.get(e.get("service", "?"), 0) + 1
             loc = e.get("location") or "UNKNOWN"
-            # simplify to country if "City, Country (XX)"
             country = loc.split(",")[-1].strip() if "," in loc else loc
             by_country[country] = by_country.get(country, 0) + 1
             if e.get("ip"):
@@ -75,7 +86,6 @@ class EventStore:
             if v is None or v == "":
                 continue
             if str(e.get(k, "")).lower() != str(v).lower():
-                # allow partial match for some fields
                 if k in ("ip", "location", "type", "service") and str(v).lower() not in str(e.get(k, "")).lower():
                     return False
                 if k not in ("ip", "location", "type", "service"):
@@ -83,5 +93,4 @@ class EventStore:
         return True
 
 
-# Global singleton
 store = EventStore()
