@@ -1,4 +1,6 @@
 # Honigtopf v3.1
+<img width="1366" height="707" alt="Sans titre" src="https://github.com/user-attachments/assets/4aa2a2b5-8a2d-439a-b745-a958fdd0b43d" />
+<img width="1176" height="466" alt="Sans titre2" src="https://github.com/user-attachments/assets/645ed904-11ef-43c6-a234-4134e363b687" />
 
 **Multi-service honeypot framework with advanced Plotly dashboard.**
 
