@@ -1,0 +1,35 @@
+# Stage 1: Compilation des dépendances
+FROM python:3.11-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache gcc musl-dev libffi-dev
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+# Stage 2: Runtime de production
+FROM python:3.11-alpine
+
+WORKDIR /app
+
+# Création de l'utilisateur non-root
+RUN addgroup -g 1000 honigtopf && \
+    adduser -u 1000 -G honigtopf -s /bin/sh -D honigtopf
+
+# Récupération des packages Python
+COPY --from=builder /install /usr/local
+
+# Copie du projet et gestion des permissions
+COPY --chown=honigtopf:honigtopf . /app
+
+RUN mkdir -p /app/logs /app/config /app/reports && \
+    chown -R honigtopf:honigtopf /app
+
+USER honigtopf
+
+# Ports : Dashboard (8050), HTTP (8080), Telnet (2323), FTP (2121), SMB (4455)
+EXPOSE 8050 8080 2323 2121 4455
+
+ENTRYPOINT ["python", "cli.py"]
+CMD ["start", "--services", "http", "telnet", "ftp", "smb"]

@@ -1,4 +1,4 @@
-"""Honigtopf V3 control GUI – multi-service launcher."""
+"""Honigtopf V5 control GUI – multi-service launcher."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ ctk.set_default_color_theme("blue")
 class HonigtopfGUI(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
-        self.title("Honigtopf v4 — Multi-Service Honeypot")
+        self.title("Honigtopf v5 — Multi-Service Honeypot")
         self.geometry("1000x720")
         self.minsize(880, 600)
 

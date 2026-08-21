@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Honigtopf v3 — Multi-service honeypot with advanced dashboard."""
+"""Honigtopf v5 — Multi-service honeypot with advanced dashboard."""
 
 from __future__ import annotations
 
